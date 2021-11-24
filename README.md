@@ -1,7 +1,7 @@
-[![Latest Stable Version](https://poser.pugx.org/arrilot/bitrix-migrations/v/stable.svg)](https://packagist.org/packages/karpenko-na-fork/bitrix-migrations/)
-[![Total Downloads](https://img.shields.io/packagist/dt/arrilot/bitrix-migrations.svg?style=flat)](https://packagist.org/packages/karpenko-na-fork/bitrix-migrations)
-[![Build Status](https://img.shields.io/travis/arrilot/bitrix-migrations/master.svg?style=flat)](https://travis-ci.org/github/karpenko-na-fork/bitrix-migrations)
-[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/arrilot/bitrix-migrations/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/karpenko-na-fork/bitrix-migrations/)
+[![Latest Stable Version](https://poser.pugx.org/karpenko-na-fork/bitrix-migrations/v/stable.svg)](https://packagist.org/packages/karpenko-na-fork/bitrix-migrations/)
+[![Total Downloads](https://img.shields.io/packagist/dt/karpenko-na-fork/bitrix-migrations.svg?style=flat)](https://packagist.org/packages/karpenko-na-fork/bitrix-migrations)
+[![Build Status](https://img.shields.io/travis/github/karpenko-na-fork/bitrix-migrations/master.svg?style=flat)](https://travis-ci.org/github/karpenko-na-fork/bitrix-migrations)
+[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/karpenko-na-fork/bitrix-migrations/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/karpenko-na-fork/bitrix-migrations/)
 
 # Bitrix-migrations
 
