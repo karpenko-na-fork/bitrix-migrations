@@ -313,6 +313,7 @@ class IBlockMigration extends BitrixMigration
 
         foreach ($IBlockFields as $fieldName => $fieldValue) {
             $typeAr = explode(':', $fieldValue[1]);
+            var_dump($typeAr);
             $aUserField = array(
                 'IBLOCK_ID' => $IBlockId,
                 'CODE' => 'UF_' . strtoupper($fieldName),
@@ -444,7 +445,8 @@ class IBlockMigration extends BitrixMigration
 
     protected function actualizeListUrl($iblockId) {
         // вот эта штука прописывает УРЛ для редактирования элемента из сущности (сделки, например)
-        $list = new \CList($iblockId);
-        $list->ActualizeDocumentAdminPage('/services/lists/'.$iblockId.'/element/#section_id#/#element_id#/');
+        global $DB;
+        $url = '/services/lists/'.$iblockId.'/element/#section_id#/#element_id#/';
+        $DB->Query("INSERT INTO b_lists_url (IBLOCK_ID, URL) values (".$iblockId.", '".$DB->ForSQL($url)."')");
     }
 }
