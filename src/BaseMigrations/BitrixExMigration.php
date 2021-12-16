@@ -1,13 +1,15 @@
 <?php
 
-namespace Arrilot\BitrixMigrations\BaseMigrations;
+namespace InformUnity\Migrations;
 
+use Arrilot\BitrixMigrations\BaseMigrations\BitrixMigration;
 use Arrilot\BitrixMigrations\Exceptions\MigrationException;
-use Arrilot\BitrixMigrations\Constructors\HighloadBlock;
 use Bitrix\Main\Loader;
 use Bitrix\Iblock;
+use Arrilot\BitrixMigrations\Constructors\HighloadBlock;
+use Bitrix\Main\SystemException;
 
-class BitrixExMigration extends BitrixMigration
+class IBlockMigration extends BitrixMigration
 {
     protected $hlBlocksIds = [];
 
@@ -216,6 +218,44 @@ class BitrixExMigration extends BitrixMigration
         }
     }
 
+    protected function deleteUfFields($hlBlockId, $UfFields)
+    {
+        $obUserField = new \CUserTypeEntity;
+        $createdFields = array_keys($UfFields);
+        $entityId = is_numeric($hlBlockId) ? 'HLBLOCK_' . $hlBlockId : $hlBlockId;
+        foreach ($createdFields as $createdField) {
+            $id = $obUserField->GetList([], ["ENTITY_ID" => $entityId, "FIELD_NAME" => 'UF_' . strtoupper($createdField)])->fetch()['ID'];
+            if ($id) {
+                $obUserField->Delete($id);
+            }
+        }
+    }
+
+    protected function addHL()
+    {
+        Loader::includeModule("highloadblock");
+
+        $hlb = new Highloadblock;
+        $hlb->constructDefault($this->hlName, $this->tblName);
+        foreach ($this->langTitles as $lang => $title) {
+            $hlb->setLang($lang, $title);
+        }
+
+        $hlBlockId = $hlb->add();
+
+        if (!$hlBlockId) {
+            throw new MigrationException('Ошибка при добавлении инфоблока ' . $hlb->LAST_ERROR);
+        }
+
+        return $hlBlockId;
+    }
+
+    protected function deleteHL()
+    {
+        Loader::includeModule("highloadblock");
+        Highloadblock::delete($this->tblName);
+    }
+
     protected function addIblock($typeCode, $code, $name)
     {
         $arIblock = \CIBlock::GetList(
@@ -288,7 +328,7 @@ class BitrixExMigration extends BitrixMigration
                 'PROPERTY_TYPE' => $typeAr[0],
                 // Пользовательские типы
                 // S:HTML - HTML/текст
-		        // S:video - Видео
+                // S:video - Видео
                 // S:Date - Дата
                 // S:DateTime - Дата/Время
                 // S:Money - Деньги
@@ -330,12 +370,12 @@ class BitrixExMigration extends BitrixMigration
                 'ACTIVE' => 'Y',
                 //'LIST_TYPE' => 'L'//$fieldValue['LIST_TYPE'] // L, C
             );
-            
-            if ($fieldValue[1] == 'E') {
+
+            if ($typeAr[0] == 'E') {
                 if (!empty($fieldValue[4])) {
-                    $ib = explode(':', $fieldValue[4]);
+                    $ib = explode('.', $fieldValue[4]);
                     if (!empty($ib[0]) && !empty($ib[1])) {
-                        $iblock_id = $this->addIblock($ib[1], null, $ib[0]);
+                        $iblock_id = $this->findIblock($ib[0], $ib[1]);
                         if (intval($iblock_id) > 0) {
                             $aUserField['LINK_IBLOCK_ID'] = $iblock_id;
                         }
@@ -402,41 +442,9 @@ class BitrixExMigration extends BitrixMigration
         }
     }
 
-    protected function deleteUfFields($hlBlockId, $UfFields)
-    {
-        $obUserField = new \CUserTypeEntity;
-        $createdFields = array_keys($UfFields);
-        $entityId = is_numeric($hlBlockId) ? 'HLBLOCK_' . $hlBlockId : $hlBlockId;
-        foreach ($createdFields as $createdField) {
-            $id = $obUserField->GetList([], ["ENTITY_ID" => $entityId, "FIELD_NAME" => 'UF_' . strtoupper($createdField)])->fetch()['ID'];
-            if ($id) {
-                $obUserField->Delete($id);
-            }
-        }
-    }
-
-    protected function addHL()
-    {
-        Loader::includeModule("highloadblock");
-
-        $hlb = new Highloadblock;
-        $hlb->constructDefault($this->hlName, $this->tblName);
-        foreach ($this->langTitles as $lang => $title) {
-            $hlb->setLang($lang, $title);
-        }
-
-        $hlBlockId = $hlb->add();
-
-        if (!$hlBlockId) {
-            throw new MigrationException('Ошибка при добавлении инфоблока ' . $hlb->LAST_ERROR);
-        }
-
-        return $hlBlockId;
-    }
-
-    protected function deleteHL()
-    {
-        Loader::includeModule("highloadblock");
-        Highloadblock::delete($this->tblName);
+    protected function actualizeListUrl($iblockId) {
+        // вот эта штука прописывает УРЛ для редактирования элемента из сущности (сделки, например)
+        $list = new \CList($iblockId);
+        $list->ActualizeDocumentAdminPage('/services/lists/'.$iblockId.'/element/#section_id#/#element_id#/');
     }
 }
