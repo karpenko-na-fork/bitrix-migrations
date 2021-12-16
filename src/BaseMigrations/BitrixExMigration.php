@@ -313,7 +313,6 @@ class IBlockMigration extends BitrixMigration
 
         foreach ($IBlockFields as $fieldName => $fieldValue) {
             $typeAr = explode(':', $fieldValue[1]);
-            var_dump($typeAr);
             $aUserField = array(
                 'IBLOCK_ID' => $IBlockId,
                 'CODE' => 'UF_' . strtoupper($fieldName),
