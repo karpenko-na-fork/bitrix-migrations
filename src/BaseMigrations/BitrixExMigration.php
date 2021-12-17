@@ -1,15 +1,13 @@
 <?php
+namespace Arrilot\BitrixMigrations\BaseMigrations;
 
-namespace InformUnity\Migrations;
-
-use Arrilot\BitrixMigrations\BaseMigrations\BitrixMigration;
 use Arrilot\BitrixMigrations\Exceptions\MigrationException;
+use Arrilot\BitrixMigrations\Constructors\HighloadBlock;
 use Bitrix\Main\Loader;
 use Bitrix\Iblock;
-use Arrilot\BitrixMigrations\Constructors\HighloadBlock;
 use Bitrix\Main\SystemException;
 
-class IBlockMigration extends BitrixMigration
+class BitrixExMigration extends BitrixMigration
 {
     protected $hlBlocksIds = [];
 
